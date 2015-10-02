@@ -24,11 +24,15 @@ public class TapToWake {
     private static String CONTROL_PATH = "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-004a/wakeup_mode";
 
     public static boolean isSupported() {
-        return new File(CONTROL_PATH).exists();
+        return true;
     }
 
     public static boolean isEnabled()  {
-        return Integer.parseInt(FileUtils.readOneLine(CONTROL_PATH)) == 1;
+        boolean enabled = false;
+        String state = FileUtils.readOneLine(CONTROL_PATH);
+        if (state != null)
+            enabled = (Long.decode(state) & 0x200) == 0x200;
+        return enabled;
     }
 
     public static boolean setEnabled(boolean state)  {
